@@ -94,7 +94,7 @@ export const login = async (req, res) => {
         const token = existingUser.generateToken()
         const {password, ...rest} = existingUser._doc
 
-        return res.status(200).json({status: true, message:"You have been logged in Successfully", token, data:{rest}})
+        return res.status(200).json({status: true, message:"You have been logged in Successfully", token, data:{...rest}})
     } catch (error) {
         console.log("Login Error:", error.message)
         return res.status(500).json({status: false, message:"Internal server error. Please try again later"})
