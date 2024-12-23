@@ -1,11 +1,6 @@
 import mongoose from "mongoose"
 
-// productName (string)
-// category (string)
-// description (string)
-// imgUrl (string)
-// price (string)
-// shortDosc (string)
+
  
 const productSchema = new mongoose.Schema({
   productOnwer: { type: mongoose.Types.ObjectId, required: true, ref: "user" }, 

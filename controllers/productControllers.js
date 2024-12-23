@@ -3,7 +3,6 @@ import productModel from "../models/productModel.js"
 import userModel from "../models/userModel.js"
 
 
- 
 export const addProduct = async (req, res) => {
     if (!req.body.productOnwer) { 
         req.body.productOnwer = req.userID 
@@ -26,8 +25,6 @@ export const addProduct = async (req, res) => {
     }
 }
 
-
-
 export const fetchProductsByCategor = async (req, res) => {
     try {
         const { category } = req.query;
@@ -49,7 +46,6 @@ export const fetchProductsByCategor = async (req, res) => {
     }
 }
 
-
 export const fetchProductByID = async (req, res) => {
     const { productID } = req.params
 
@@ -68,8 +64,6 @@ export const fetchProductByID = async (req, res) => {
         return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
     }
 }
-
-
 
 export const deleteProductByID = async (req, res) => {
     const { productID } = req.params
@@ -94,5 +88,28 @@ export const deleteProductByID = async (req, res) => {
     } catch (error) {
         console.log("Error fetching product:", error.message)
         return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
+    }
+}
+
+
+
+
+
+
+
+export const getRandomProducts = async (req, res) => {
+    try {
+        const count = parseInt(req.query.count) || 3
+
+        if (isNaN(count) || count <= 0) {
+            return res.status(400).json({success: false,message: "Invalid 'count' parameter. It must be a positive number."})
+        }
+
+        const randomProducts = await productModel.aggregate([{ $sample: { size: count } }])
+
+        return res.status(200).json({success: true,data: randomProducts})
+    } catch (error) {
+        console.error("Error fetching random products:", error.message);
+        return res.status(500).json({success: false,message: "Internal server error. Please try again later."})
     }
 }

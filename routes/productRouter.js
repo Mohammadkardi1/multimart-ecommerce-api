@@ -12,7 +12,4 @@ productRouter.get('/productByID/:productID',verifyToken, fetchProductByID)
 productRouter.delete('/deleteProduct/:productID',verifyToken, restrictAccess(["Seller"]), deleteProductByID)
 
 
-
-
-
 export default productRouter
