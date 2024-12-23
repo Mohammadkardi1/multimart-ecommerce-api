@@ -10,9 +10,9 @@ import bcrypt from 'bcryptjs'
 
 // API register endpoint
 export const register = async (req, res) => {
-    const {username, email, password} = req.body
+    const {username, email, password, role} = req.body
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !role) {
         return res.status(400).json({message:"Required fields are missing"})
     }
     if (!nameValidator(username.trim())) {

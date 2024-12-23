@@ -4,6 +4,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import authRouter from './routes/authRouter.js';
+import productRouter from './routes/productRouter.js';
 
 
 
@@ -31,7 +32,7 @@ app.use(express.json())
   
 app.use('/api/auth', authRouter )
 // app.use('/api/user', ) 
-// app.use('/api/product', )
+app.use('/api/product', productRouter)
 
 
 app.get('/', (req, res) => {
