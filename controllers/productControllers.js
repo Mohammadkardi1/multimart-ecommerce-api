@@ -93,11 +93,8 @@ export const deleteProductByID = async (req, res) => {
 
 
 
-
-
-
-
 export const getRandomProducts = async (req, res) => {
+
     try {
         const count = parseInt(req.query.count) || 3
 

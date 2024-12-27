@@ -1,5 +1,5 @@
 import express from 'express'
-import { addProduct, deleteProductByID, fetchProductByID, fetchProductsByCategor } from './../controllers/productControllers.js';
+import { addProduct, deleteProductByID, fetchProductByID, fetchProductsByCategor, getRandomProducts } from './../controllers/productControllers.js';
 import { verifyToken } from './../middleware/verifyToken.js';
 import { restrictAccess } from './../middleware/restrictAccess.js';
 
@@ -10,6 +10,9 @@ productRouter.post('/addProduct',verifyToken, restrictAccess(["Seller"]),  addPr
 productRouter.get('/productsByCategor',verifyToken, fetchProductsByCategor)
 productRouter.get('/productByID/:productID',verifyToken, fetchProductByID)
 productRouter.delete('/deleteProduct/:productID',verifyToken, restrictAccess(["Seller"]), deleteProductByID)
+productRouter.get('/randomProducts', getRandomProducts)
+
+
 
 
 export default productRouter
