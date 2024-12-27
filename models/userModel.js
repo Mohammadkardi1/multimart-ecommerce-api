@@ -1,10 +1,6 @@
 import mongoose from "mongoose"
 import Jwt  from 'jsonwebtoken'
 
-// displayName(string)
-// email(string)
-// photoURL(string)
-// uid"7KQgRhCstTNrTDwYmcKORvUu7uE2"
 
 
 const userSchema = new mongoose.Schema({
