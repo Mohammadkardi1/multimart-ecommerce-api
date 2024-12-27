@@ -74,7 +74,7 @@ export const login = async (req, res) => {
     }
  
     try {
-        const existingUser = await userModel.findOne({email})
+        const existingUser = await userModel.findOne({email}).populate("products")
         // Check if the user exsits in Database
         if (!existingUser) {
             return res.status(404).json({success: false, message: "User not found! Please Sign up"})

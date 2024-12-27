@@ -16,51 +16,12 @@ export const addProduct = async (req, res) => {
         const addedProduct = await new productModel(req.body)
         const savedProduct = await addedProduct.save()
 
-        await userModel.findByIdAndUpdate(productOnwer, {$push: {products: savedProduct._id}}, { new: true })
+        const updatedUser = await userModel.findByIdAndUpdate(productOnwer, {$push: {products: savedProduct._id}}, { new: true }).select('-password').populate('products')
 
-        return res.status(201).json({success: true, message: "The product has been added successfully."})
+
+        return res.status(201).json({success: true, message: "The product has been added successfully.", data: updatedUser})
     } catch (error) {
         console.log("Error adding product:", error.message)
-        return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
-    }
-}
-
-export const fetchProductsByCategor = async (req, res) => {
-    try {
-        const { category } = req.query;
-
-        if (!category) {
-            return res.status(400).json({success: false,message: "Category is required as a query parameter"})
-        }
-
-        const fetchedProducts = await productModel.find({ category })
-
-        if (fetchedProducts.length === 0) {
-            return res.status(404).json({success: false, message: "No products found in this category."})
-        }
-
-        return res.status(200).json({success: true, message: `Products in category: ${category}`,data: fetchedProducts})
-    } catch (error) {
-        console.error("Error fetching products by category:", error);
-        return res.status(500).json({success: false, message: "Internal Server Error. Please try again later."})
-    }
-}
-
-export const fetchProductByID = async (req, res) => {
-    const { productID } = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(productID)) {
-        return res.status(400).json({ success: false, message: "Invalid ID format." })
-    }
-
-    try {
-        const fetchedProduct = await productModel.findById(productID)
-        if (!fetchedProduct) {
-            return res.status(404).json({success: true, message: "Product Not Found."})
-        }
-        return res.status(200).json({success: true, message: "The product document has been retrieved Successfully.", data: fetchedProduct})
-    } catch (error) {
-        console.log("Error fetching product:", error.message)
         return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
     }
 }
@@ -82,15 +43,14 @@ export const deleteProductByID = async (req, res) => {
 
 
         await productModel.findByIdAndDelete(productID)
-        await userModel.findByIdAndUpdate(product.productOnwer, { $pull: { products: productID } })
+        const updatedUser = await userModel.findByIdAndUpdate(product.productOnwer, { $pull: { products: productID }}, {new: true}).select('-password').populate('products')
 
-        return res.status(200).json({success: true, message: "The product document has been deleted Successfully."})
+        return res.status(200).json({success: true, message: "The product document has been deleted Successfully.", data: updatedUser})
     } catch (error) {
         console.log("Error fetching product:", error.message)
         return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
     }
 }
-
 
 
 export const getRandomProducts = async (req, res) => {
@@ -108,5 +68,82 @@ export const getRandomProducts = async (req, res) => {
     } catch (error) {
         console.error("Error fetching random products:", error.message);
         return res.status(500).json({success: false,message: "Internal server error. Please try again later."})
+    }
+}
+
+
+
+export const getFilteredProducts = async (req, res) => {
+    const { sort, category, searchTerm } = req.query
+
+    try {
+        let query = {}
+
+        if (category) {
+            query.category = category
+        }
+
+        if (searchTerm) {
+            query.productName = { $regex: searchTerm, $options: 'i' }
+        }
+
+        const products = await productModel.find(query);
+
+        if (products.length === 0) {
+            return res.status(404).json({ success: false, message: 'No products found with the given filters.' });
+        }
+
+        let sortOption = {};
+        if (sort === 'Ascending') {
+            sortOption = { price: 1 };  // Ascending order
+        } else if (sort === 'Descending') {
+            sortOption = { price: -1 };  // Descending order
+        }
+
+        const sortedProducts = await productModel.find(query).sort(sortOption)
+
+        return res.status(200).json({success: true, message: 'Products retrieved successfully.',data: sortedProducts})
+
+    } catch (error) {
+        console.error('Error fetching products:', error.message)
+        return res.status(500).json({ success: false, message: 'Internal server error. Please try again later.' })
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const getProductByID = async (req, res) => {
+    const { productID } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(productID)) {
+        return res.status(400).json({ success: false, message: "Invalid ID format." })
+    }
+
+    try {
+        const fetchedProduct = await productModel.findById(productID)
+        if (!fetchedProduct) {
+            return res.status(404).json({success: true, message: "Product Not Found."})
+        }
+        return res.status(200).json({success: true, message: "The product document has been retrieved Successfully.", data: fetchedProduct})
+    } catch (error) {
+        console.log("Error fetching product:", error.message)
+        return res.status(500).json({success: false, message: "Internal server error. Please try again later."})
     }
 }
