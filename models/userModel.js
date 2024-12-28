@@ -9,7 +9,16 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   photoURL: { type: String },
   role: {type: String, required: true, enum: ["Seller", "Customer"], default: "Customer"},
-  products: [{type: mongoose.Types.ObjectId, ref: "product" }],
+  products: [{type: mongoose.Types.ObjectId, ref: "product"}],
+  cart: [
+    {
+      productID: { type: mongoose.Types.ObjectId, ref: 'product' },
+      quantity: { type: Number, default: 1 },
+      price: { type: Number, required: true }
+    }
+  ],
+  totalAmount: { type: Number, default: 0 },
+  totalQuantity: { type: Number, default: 0 },
   verified: { type: Boolean, default: false},
 }) 
 
@@ -22,6 +31,13 @@ userSchema.methods.generateToken = function () {
     }
   return Jwt.sign(payload, process.env.JWT_SECRET_KEY, {expiresIn: '6h'})
 }
+
+
+userSchema.pre('save', function (next) {
+  this.totalAmount = this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  this.totalQuantity = this.cart.reduce((sum, item) => sum + parseInt(item.quantity), 0)
+  next()
+})
 
 
 

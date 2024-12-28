@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import authRouter from './routes/authRouter.js';
 import productRouter from './routes/productRouter.js';
+import cartRouter from './routes/cartRouter.js';
 
 
 
@@ -31,8 +32,8 @@ app.use(express.json())
 
   
 app.use('/api/auth', authRouter )
-// app.use('/api/user', ) 
 app.use('/api/product', productRouter)
+app.use('/api/cart', cartRouter)
 
 
 app.get('/', (req, res) => {

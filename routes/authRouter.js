@@ -9,7 +9,4 @@ authRouter.post('/login', login)
 authRouter.get('/:id/verify/:token', verifyEmail)
 
 
-
-
-
 export default authRouter
