@@ -31,8 +31,11 @@ export const addToCart = async (req, res) => {
       }
   
       await existingUser.save()
+
+      const updatedUser = await userModel.findById(userID).populate("products").populate('cart.productID')
+
   
-      return res.status(200).json({success: true, message: 'Product added to cart successfully', data: existingUser,})
+      return res.status(200).json({success: true, message: 'Product added to cart successfully', data: updatedUser,})
     } catch (error) {
       console.error('Error adding to cart:', error.message)
       return res.status(500).json({ success: false, message: 'Internal server error. Please try again later.' })
@@ -51,7 +54,7 @@ export const removeCart = async (req, res) => {
     }
 
     try {
-      const existingUser = await userModel.findById(userID).populate('cart.productID')
+      const existingUser = await userModel.findById(userID).populate("products").populate('cart.productID')
       if (!existingUser) {
         return res.status(404).json({ success: false, message: 'User not found' })
       }
@@ -70,25 +73,25 @@ export const removeCart = async (req, res) => {
 
 
 
-export const getUserCart = async (req, res) => {
+// export const getUserCart = async (req, res) => {
 
-    // const { userID } = req.params
-    if (!req.userID) {
-      return res.status(400).json({ success: false, message: 'User ID is required' })
-    }
+//     // const { userID } = req.params
+//     if (!req.userID) {
+//       return res.status(400).json({ success: false, message: 'User ID is required' })
+//     }
     
-    try {
-      const existingUser = await userModel.findById(req.userID).populate('cart.productID')
+//     try {
+//       const existingUser = await userModel.findById(req.userID).populate('cart.productID')
   
-      if (!existingUser) {
-        return res.status(404).json({ success: false, message: 'User not found' })
-      }
+//       if (!existingUser) {
+//         return res.status(404).json({ success: false, message: 'User not found' })
+//       }
   
-      return res.status(200).json({success: true, message: 'User cart retrieved successfully', 
-            data: {cart: existingUser.cart, totalAmount: existingUser.totalAmount, totalQuantity: existingUser.totalQuantity}})
-    } catch (error) {
-      console.error('Error fetching user cart:', error.message);
-      return res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  }
+//       return res.status(200).json({success: true, message: 'User cart retrieved successfully', 
+//             data: {cart: existingUser.cart, totalAmount: existingUser.totalAmount, totalQuantity: existingUser.totalQuantity}})
+//     } catch (error) {
+//       console.error('Error fetching user cart:', error.message);
+//       return res.status(500).json({ success: false, message: 'Internal server error' });
+//     }
+//   }
   
