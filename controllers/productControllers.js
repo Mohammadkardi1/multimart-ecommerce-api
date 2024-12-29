@@ -16,7 +16,7 @@ export const addProduct = async (req, res) => {
         const addedProduct = await new productModel(req.body)
         const savedProduct = await addedProduct.save()
 
-        const updatedUser = await userModel.findByIdAndUpdate(productOnwer, {$push: {products: savedProduct._id}}, { new: true }).select('-password').populate('products')
+        const updatedUser = await userModel.findByIdAndUpdate(productOnwer, {$push: {products: savedProduct._id}}, { new: true }).select('-password').populate('products').populate('cart.productID')
 
 
         return res.status(201).json({success: true, message: "The product has been added successfully.", data: updatedUser})
@@ -41,9 +41,8 @@ export const deleteProductByID = async (req, res) => {
             return res.status(403).json({ success: false, message: "You are not authorized to delete this product." })
         }
 
-
-        await productModel.findByIdAndDelete(productID)
-        const updatedUser = await userModel.findByIdAndUpdate(product.productOnwer, { $pull: { products: productID }}, {new: true}).select('-password').populate('products')
+        const deletedProduct = await productModel.findOneAndDelete({ _id: productID })
+        const updatedUser = await userModel.findByIdAndUpdate(product.productOnwer, { $pull: { products: productID }}, {new: true}).select('-password').populate('products').populate('cart.productID')
 
         return res.status(200).json({success: true, message: "The product document has been deleted Successfully.", data: updatedUser})
     } catch (error) {

@@ -21,11 +21,10 @@ const CONNECTION_URL = process.env.MONGO_URL
 
 
 
-// ['http://localhost:5173', 'https://medicare-client-mocha.vercel.app'] 
 // Middleware
 app.use(cors({
     credentials: true,
-    origin: true
+    origin: ['http://localhost:3000', 'https://mohammad-kardi-multimart-ecommerce-full-stack.vercel.app']
 }))
 app.use(cookieParser())
 app.use(express.json())

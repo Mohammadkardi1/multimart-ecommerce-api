@@ -32,7 +32,7 @@ export const addToCart = async (req, res) => {
   
       await existingUser.save()
 
-      const updatedUser = await userModel.findById(userID).populate("products").populate('cart.productID')
+      const updatedUser = await userModel.findById(userID).select('-password').populate("products").populate('cart.productID')
 
   
       return res.status(200).json({success: true, message: 'Product added to cart successfully', data: updatedUser,})
@@ -54,7 +54,7 @@ export const removeCart = async (req, res) => {
     }
 
     try {
-      const existingUser = await userModel.findById(userID).populate("products").populate('cart.productID')
+      const existingUser = await userModel.findById(userID).select('-password').populate("products").populate('cart.productID')
       if (!existingUser) {
         return res.status(404).json({ success: false, message: 'User not found' })
       }

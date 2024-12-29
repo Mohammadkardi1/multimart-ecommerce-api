@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import userModel from './userModel.js';
 
 
  
@@ -12,6 +13,21 @@ const productSchema = new mongoose.Schema({
   shortDosc: { type: String },
 },  { timestamps: true }
 )
+
+
+
+productSchema.post('findOneAndDelete', async function (deletedProduct) {
+  if (deletedProduct) {
+      const productID = deletedProduct._id
+      await userModel.updateMany(
+          { 'cart.productID': productID },
+          { $pull: { cart: { productID: productID } } }
+      )
+  }
+})
+
+
+
 
 
 const productModel = mongoose.model('product', productSchema)
